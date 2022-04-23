@@ -14,6 +14,9 @@ The **Radar Ghost Dataset** -- a dataset with detailed manual annotations for di
 - `original.zip` contains the 111 hand labeled sequences as described in the paper
 - `virtual.zip` contains additional 460 sequences with multiple objects. Those were created by overlaying original sequences from the same scenario.
 
+### Images
+Check the `images.zip` for example images of each scenario.
+
 ### H5 Files
 The dataset is provided as `h5` files (after unpacking the zip files). Each h5 file contains an `radar` and `lidar` dataset entry (check code example below).
 
@@ -167,6 +170,3 @@ The sequences in the `virtual/` folder have a slightly more involved naming sche
 scenario-xx_sequences-x-...-x_start-frames-x-...-x_class-...-class_split.h5
 ```
 Each virtual sequence is comprised of multiple real sequences of a single scenario. The used sequences are denoted after the `sequences-` part (between two and 5 sequences). When overlaying the sequences we do not start each sequence from zero. The used start frames for each sequence is indicated after the `start-frames-` part of the name. This also allows to overlay the same sequence but started at different times. After that the classes of the main object of each sequence is listed (ped or cycl). Finally the split is indicated.
-
-## Images
-Check the `images.zip` for example images of each scenario. (Work in progress)
