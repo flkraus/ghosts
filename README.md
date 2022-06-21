@@ -35,11 +35,11 @@ with h5py.File(path, 'r') as data:
 Check `label_convention.md` for more information.
 
 ### Coordinate Systems
-We use two types of coordinate systems. Sensor coordinate systems for the two radars and a "car coordinate" system which is the same for the lidar and radars ([see exception for v1.0 of dataset](#wrong-coordinate-system-in-v1.0)).
+We use two types of coordinate systems. Sensor coordinate systems for each sensor (two radars, one lidar) and a "car coordinate" system which is the same for all sensors ([see exception for v1.0 of dataset](#issue:-missing-car-coordinate-system-for-lidar-in-v1.0)).
 
 Each positional entry has an indicator attached which coordinate system it belongs to. The car coordinate system is indicated with `_cc` and the sensor coordinate systems with `_sc`.
 
-All coordinate systems use the standard convention for car coordinate systems: x-axis points to the front, y-axis points to the left, and the z-axis points up. A positive azimuth angle within the radar coordinate frames indicates measures left to the y-axis (same as yaw).
+All coordinate systems use the standard convention for car coordinate systems: x-axis points to the front, y-axis points to the left, and the z-axis points up. A positive azimuth angle (phi) within the radar coordinate frames indicates measures left to the y-axis (same as yaw).
 
 All entries are given in meters [m] or radians [rad] for angles.
 
@@ -95,17 +95,22 @@ Description of each entry for radar data in the h5 file. Note: the radar has no 
 | Column               | Description |
 | -------------------- | ----------- |
 | timestamp      | Timestamp for each frame, starting at zero. |
-| x_cc                 | x-coordinate [m] in car coordinate system |
-| y_cc                 | y-coordinate [m] in car coordinate system |
-| z_cc                 | z-coordinate [m] in car coordinate system |
+| x_sc                 | x-coordinate [m] in car coordinate system |
+| y_sc                 | y-coordinate [m] in car coordinate system |
+| z_sc                 | z-coordinate [m] in car coordinate system |
 
-Version 1.0 (current version) of the dataset has two minor issues with the lidar data.
+### Issues with v1.0 Lidar Data
+Version 1.0 (current version) of the dataset has three issues with the lidar data. If you want to work with Lidar data it is advised to use a newer version (once available).
 
-#### Timestamps Sync Issue between Radar and Lidar in v1.0
+#### Issue: Sensor Noise
+Data contains lidar points which are marked as noise. Those will be removed in the next version.
+
+#### Issue: Timestamps Sync Issue between Radar and Lidar in v1.0
 The currently provided timestamps for the lidar do not necessarily sync correctly with the radar. Might be off by some tenths of a second. The current timestamps for lidar and radar timestamps start at 0. This is incorrect, since measurements of lidar and radar do not necessarily start at the same time.  Will be fixed with a new version.
 
-#### Wrong Coordinate System in v1.0
-Minor bug regarding coordinate system of lidar. The lidar is in "sensor coordinates" and not(!) in "car coordinates" as (wrongly) indicated by `_cc`.  Will be fixed with a new version. Quickfix: account for the mounting position relative to the car coordinate system.
+#### Issue: Missing Car Coordinate System for Lidar in v1.0
+The lidar data currently only contains "sensor coordinates" (`_sc`) and not "car coordinates" (`_cc`).
+A new version will provide the data in car coordinates. Quickfix: account for the mounting position relative to the car coordinate system.
 
 ```python
 lidar_mounting_pos = {
@@ -115,9 +120,9 @@ lidar_mounting_pos = {
 }
 
 # sensor coordinates to car coordinates
-lidar_data['x_cc'] = lidar_data['x_cc'] + lidar_mounting_pos['x']
-lidar_data['y_cc'] = lidar_data['y_cc'] + lidar_mounting_pos['y']
-lidar_data['z_cc'] = lidar_data['z_cc'] + lidar_mounting_pos['z']
+lidar_data['x_cc'] = lidar_data['x_sc'] + lidar_mounting_pos['x']
+lidar_data['y_cc'] = lidar_data['y_sc'] + lidar_mounting_pos['y']
+lidar_data['z_cc'] = lidar_data['z_sc'] + lidar_mounting_pos['z']
 ```
 
 
