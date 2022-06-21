@@ -25,11 +25,13 @@ The dataset is provided as `h5` files (after unpacking the zip files). Each h5 f
 
 ```python
 import h5py
+import numpy as np
 
 path = 'radar_ghost_example.h5'
 with h5py.File(path, 'r') as data:
-    radar_data = data['radar']  # numpy struct array
-    lidar_data = data['lidar']  # numpy struct array
+    # use np.copy when using context managers (with statement), otherwise data will be empty.
+    radar_data = np.copy(data['radar'])  # numpy struct array
+    lidar_data = np.copy(data['lidar'])  # numpy struct array
 
 # work with data ...
 ```
