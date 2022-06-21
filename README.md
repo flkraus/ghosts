@@ -17,6 +17,9 @@ The **Radar Ghost Dataset** -- a dataset with detailed manual annotations for di
 ### Images
 Check the `images.zip` for example images of each scenario.
 
+### Mirrors
+Check `mirrors.zip` for short descriptions of the reflective surfaces. Contains a `.json` file for each sequence. Additional info regarding the `mirrors` column in the radar data.
+
 ### H5 Files
 The dataset is provided as `h5` files (after unpacking the zip files). Each h5 file contains an `radar` and `lidar` dataset entry (check code example below).
 
@@ -89,7 +92,7 @@ Description of each entry for radar data in the h5 file. Note: the radar has no 
 | instance_id          | Instance or cluster id. May stretch over multiple frames. A single object might have multiple instance_ids if it is not visible for a certain number of frames. |
 | human_readable_label | the label_id field decoded to a human friendly format. |
 | group                | Whether a group was labeled. Only present in one scenario where a group of pedestrians was labeled. |
-| mirror               | Only valid for certin multi bounce reflection. Short description of the reflective surface is given. |
+| mirror               | Only valid for certain multi bounce reflection. Short description of the reflective surface is given. A slightly more verbose description can be found inside mirrors.zip |
 
 ### Lidar Data
 | Column               | Description |
