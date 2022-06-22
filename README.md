@@ -2,13 +2,28 @@
 This is the accompanying github repository and landing page for the **Radar Ghost Dataset**.
 
 - Paper: https://ieeexplore.ieee.org/document/9636338
-- Dataset: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6474851.svg)](https://doi.org/10.5281/zenodo.6474851)
-
+- Dataset:
+  - Version 1.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6474851.svg)](https://doi.org/10.5281/zenodo.6474851) (deprecated for lidar usage)
+  - Version 1.1: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6676246.svg)](https://doi.org/10.5281/zenodo.6676246)
 
 ## Overview
 The **Radar Ghost Dataset** -- a dataset with detailed manual annotations for different kinds of radar ghost detections. We hope that our dataset encourages more researchers to engage in the fields of radar based multi-path objects.
 
 ## Dataset
+
+### Changelog
+
+#### Version 1.0
+- Upload initial dataset to zenodo
+
+#### Version 1.1
+- Upload new version of dataset to zenodo
+- Fixed timesync issue between lidar and radar
+- Added data in car coordinates for lidar. Added columns `x_cc`, `y_cc`, and `z_cc`.
+- Removed cartesian coordinates for sensor coordinate system in lidar. Removed columns `x_sc`, `y_sc`, and `z_sc`. This will break existing code which accesses those fields. Use the car coordinate variants (`_cc`) instead. This removes the need to manually take the mounting position into account.
+- Added spherical coordinates for sensor coordinate system in lidar. Added columns `r_sc`, `theta_sc` (elevation), and `phi_sc` (azimuth). Unifies things between lidar and radar. Car coordinates are always cartesian and sensor coordinates always spherical/polar.
+- Removed lidar noise. Previously lidar data contained points marked as noise. Those are now removed.
+- Added `uuid` column for lidar data.
 
 ### Downloads
 - `original.zip` contains the 111 hand labeled sequences as described in the paper
@@ -78,8 +93,8 @@ Description of each entry for radar data in the h5 file. Note: the radar has no 
 
 | Column               | Description |
 | -------------------- | ----------- |
-| frame                | Each frame contains measurement cycle of both radar sensors (ignoring rare frame drops)       |
-| frame_timestamp      | Timestamp for each frame, starting at zero. |
+| frame                | Each frame contains measurement cycle of both radar sensors (ignoring rare frame drops) |
+| frame_timestamp      | Timestamp for each frame, relative to start of recording. |
 | timestamp            | Timestamp of the actual measurement, left and right sensor trigger with slight offset from each other. Preferably use "frame" or "frame_timestamp" instead of this. Only use this if you want to differentiate between the two sensors. |
 | sensor               | Which sensor took the measurement ("left" or "right") |
 | x_cc                 | x-coordinate [m] in car coordinate system |
@@ -90,32 +105,48 @@ Description of each entry for radar data in the h5 file. Note: the radar has no 
 | amp                  | Amplitude of radar echo |
 | uuid                 | Universal unique identifier, each radar detection is assigned an unique id. This helps track single detections over the whole dataset. Useful for debugging. |
 | original_uuid        | Only present for virtual sequences (sequences created by overlaying multiple sequences). When creating virtual sequences each detection is assigned a new uuid. The original uuid is preserved in this field. Note that the actual coordinates will differ from the original detection, since random noise is applied. |
-| label_id             | Integer encoding the label (e.g. real object, type 1 second bounce, ...). Check `label_convention.md` for more information.|
+| label_id             | Integer encoding the label (e.g. real object, type 1 second bounce, ...). Check `label_convention.md` for more information. |
 | instance_id          | Instance or cluster id. May stretch over multiple frames. A single object might have multiple instance_ids if it is not visible for a certain number of frames. |
 | human_readable_label | the label_id field decoded to a human friendly format. |
 | group                | Whether a group was labeled. Only present in one scenario where a group of pedestrians was labeled. |
 | mirror               | Only valid for certain multi bounce reflection. Short description of the reflective surface is given. A slightly more verbose description can be found inside mirrors.zip |
 
-### Lidar Data
+### Lidar Data v1.1
+Description of each entry for lidar data in the h5 file. This applys only to data from the dataset version 1.1.
+
 | Column               | Description |
 | -------------------- | ----------- |
-| timestamp      | Timestamp for each frame, starting at zero. |
-| x_sc                 | x-coordinate [m] in car coordinate system |
-| y_sc                 | y-coordinate [m] in car coordinate system |
-| z_sc                 | z-coordinate [m] in car coordinate system |
+| timestamp            | Timestamp, relative to start of recording. |
+| x_cc                 | x-coordinate [m] in car coordinate system |
+| y_cc                 | y-coordinate [m] in car coordinate system |
+| z_cc                 | z-coordinate [m] in car coordinate system |
+| r_sc                 | range [m] (distance to sensor) in sensor coordinate system (cf. mounting positions of sensors) |
+| theta_sc             | Elevation/polar angle [rad] in sensor coordinate system (cf. mounting positions of sensors) |
+| phi_sc               | Azimuth angle [rad] in sensor coordinate system (cf. mounting positions of sensors) |
+| uuid                 | Universal unique identifier, each lidar points is assigned an unique id. Useful for debugging. |
+
+### Lidar Data v1.0 (Deprecated!)
+Description of each entry for lidar data in the h5 file. This applys only to data from the dataset version 1.0.
+
+| Column               | Description |
+| -------------------- | ----------- |
+| timestamp            | Timestamp, starting at zero. Not properly synced to radar in v1.0! |
+| x_sc                 | x-coordinate [m] in sensor coordinate system |
+| y_sc                 | y-coordinate [m] in sensor coordinate system |
+| z_sc                 | z-coordinate [m] in sensor coordinate system |
 
 ### Issues with v1.0 Lidar Data
-Version 1.0 (current version) of the dataset has three issues with the lidar data. If you want to work with Lidar data it is advised to use a newer version (once available).
+Version 1.0 of the dataset has three issues with the lidar data. If you want to work with Lidar data it is advised to use data from a newer version (v1.1).
 
 #### Issue: Sensor Noise
-Data contains lidar points which are marked as noise. Those will be removed in the next version.
+Data contains lidar points which are marked as noise. Fixed in v1.1.
 
 #### Issue: Timestamps Sync Issue between Radar and Lidar in v1.0
-The currently provided timestamps for the lidar do not necessarily sync correctly with the radar. Might be off by some tenths of a second. The current timestamps for lidar and radar timestamps start at 0. This is incorrect, since measurements of lidar and radar do not necessarily start at the same time.  Will be fixed with a new version.
+The currently provided timestamps for the lidar do not necessarily sync correctly with the radar. Might be off by some tenths of a second. The current timestamps for lidar and radar timestamps start at 0. This is incorrect, since measurements of lidar and radar do not necessarily start at the same time. Fixed in v1.1.
 
 #### Issue: Missing Car Coordinate System for Lidar in v1.0
 The lidar data currently only contains "sensor coordinates" (`_sc`) and not "car coordinates" (`_cc`).
-A new version will provide the data in car coordinates. Quickfix: account for the mounting position relative to the car coordinate system.
+In v1.1 data is provided in car coordinates. Quickfix: account for the mounting position relative to the car coordinate system.
 
 ```python
 lidar_mounting_pos = {
