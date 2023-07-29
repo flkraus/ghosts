@@ -52,7 +52,7 @@ with h5py.File(path, 'r') as data:
 ```
 
 ### Annotations/Labels
-Check `label_convention.md` for more information.
+Check the [label conventions](label_convention.md) for more information.
 
 ### Coordinate Systems
 We use two types of coordinate systems. Sensor coordinate systems for each sensor (two radars, one lidar) and a "car coordinate" system which is the same for all sensors ([see exception for v1.0 of dataset](#issue:-missing-car-coordinate-system-for-lidar-in-v1.0)).
