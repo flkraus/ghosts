@@ -2,6 +2,7 @@
 This is the accompanying github repository and landing page for the **Radar Ghost Dataset**.
 
 - Paper: https://ieeexplore.ieee.org/document/9636338
+- Paper (open access): https://arxiv.org/abs/2404.01437
 - Dataset:
   - Version 1.0: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6474851.svg)](https://doi.org/10.5281/zenodo.6474851) (deprecated for lidar usage)
   - Version 1.1: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6676246.svg)](https://doi.org/10.5281/zenodo.6676246)
